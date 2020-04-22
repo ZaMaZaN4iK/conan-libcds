@@ -5,7 +5,7 @@ from conans import CMake, tools
 
 class CdsConan(ConanFile):
     name = "cds"
-    version = "2.3.2"
+    version = "2.3.3"
     archive = "lib%s-%s.tar.gz" % (name, version)
     folder = "lib%s-%s" % (name, version)
     settings = "os", "compiler", "arch", "build_type"
@@ -13,7 +13,7 @@ class CdsConan(ConanFile):
     options = {"shared": [True, False]}
     default_options = {"shared": False}
     generators = "cmake"
-    requires = "boost/1.68.0@conan/stable","gtest/1.8.0@bincrafters/stable"
+    requires = "boost/1.72.0","gtest/1.8.0@bincrafters/stable"
 
     def source(self):
         tools.download(self.url, self.archive)
@@ -35,10 +35,9 @@ class CdsConan(ConanFile):
         cmake.test()
 
     def package(self):
-        self.copy(pattern="*.h", src="cds", dst="include/cds", keep_path=True)
-        self.copy(pattern="*.so*", src="bin", dst="lib", keep_path=False)
-        self.copy(pattern="*.a*", src="bin", dst="lib", keep_path=False)
+        cmake = CMake(self)
+        cmake.install()
 
     def package_info(self):
         self.cpp_info.libs = ["cds"]
-
+        self.cpp_info.libdirs = ["lib", "lib64"]
